@@ -10,14 +10,16 @@ class Switch(ActuatorInterface):
     state_ = 0
     
     
-    def GetData(self, data):
+    def GetData(self, msg_data):
         #ActuatorInterface.GetData(self, data)
-        if (data > 0) & (self.state_ <= 0):
-            self.On()
-            self.state_ = 1
-        elif (data <= 0) & (self.state_ > 0):
-            self.Off()
-            self.state_ = 0
+        data = msg_data.value_
+        if not data == None:
+            if (data > 0) & (self.state_ <= 0):
+                self.On()
+                self.state_ = 1
+            elif (data <= 0) & (self.state_ > 0):
+                self.Off()
+                self.state_ = 0
     
     def SendState(self):
         #ActuatorInterface.SendState(self)

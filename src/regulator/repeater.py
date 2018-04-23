@@ -8,7 +8,7 @@ class Repeater(RegulatorInterface):
         #regulator.RegulatorInterface.Solver(self)
         return_value = self.state_
         
-        while not self.referencer_.empty():
+        while not len(self.referencer_):
             return_value = self.referencer_.get()
             self.referencer_.task_done()
             self.state_ = return_value 

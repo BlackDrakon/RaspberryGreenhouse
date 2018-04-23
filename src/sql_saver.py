@@ -1,5 +1,4 @@
 import sqlite3
-import time
 import worker
 
 class SqlSaver(worker.Worker):
@@ -21,7 +20,8 @@ class SqlSaver(worker.Worker):
         return "ok"
     
     def SaveDataToBase(self, data):
-        print(data)
+        #print('debug print from sql:', data.value_)
+        print('debug print from sql:', 'sender ',data.sender_name_, 'value ',data.value_, 'time ', data.time_)
         None
     
     def AddInputChanel(self,queue_in):
@@ -34,45 +34,36 @@ class SqlSaver(worker.Worker):
     def Job(self):
         
         #worker.Worker.Job(self)
-        
+        self.DataBaseConnection()
         for in_queue in self.queues_input_data_:
             while not in_queue.empty():
                 data = in_queue.get()
                 in_queue.task_done()
                 self.SaveDataToBase(data)
-    
-    def SaveMarketStateToBase(self, json_ticker, time_str):
-        #return_value = "error"
-        
-        self.DataBaseConnection()
-        
-        # time table
-        
-        self.cursor_.execute("CREATE TABLE IF NOT EXISTS time (time_id integer PRIMARY KEY, year, month, day, hour, min, sec, week_day, year_day, isdst) ")
-        self.cursor_.execute("INSERT INTO time (year, month, day, hour, min, sec, week_day, year_day, isdst) VALUES (?,?,?,?,?,?,?,?,?)",tuple(time_str))
-        
-        self.cursor_.execute("SELECT time_id FROM time ORDER BY time_id desc LIMIT 1")
-        last_time_id = int(self.cursor_.fetchall()[0][0])
-        
-        # coin table
-        
-        for pair in json_ticker:
-            
-            self.cursor_.execute('''CREATE TABLE IF NOT EXISTS '''+ pair +'''
-            (time, percentChange, high24hr, baseVolume, highestBid, lowestAsk, isFrozen, id, low24hr, last, quoteVolume,
-            FOREIGN KEY (time) REFERENCES time(time_id) ) ''')
-            
-            
-            self.cursor_.execute('''INSERT INTO '''+ pair +''' 
-            (time, percentChange, high24hr, baseVolume, highestBid, lowestAsk, isFrozen, id, low24hr, last, quoteVolume ) 
-            VALUES (?,?,?,?,?,?,?,?,?,?,?)''', [last_time_id, json_ticker[pair]['percentChange'],json_ticker[pair]['high24hr'],
-            json_ticker[pair]['baseVolume'],json_ticker[pair]['highestBid'],json_ticker[pair]['lowestAsk'],
-             json_ticker[pair]['isFrozen'],json_ticker[pair]['id'],json_ticker[pair]['low24hr'],
-              json_ticker[pair]['last'],json_ticker[pair]['quoteVolume']])
-        
-        # CREATE TABLE IF NOT EXISTS info (PRIMARY KEY id int, username text, password text)
-        
+                self.SaveMessageToBase(data)
         self.DataBaseConnectionClose()
+    
+    def SaveMessageToBase(self, message):
+        
+        return_value = "error"
+        
+#         time_ = None
+#         dimension_ = None
+#         value_name_ = None
+#         value_ = None
+#         sender_id_ = None
+#         message_id_ = None
+#         sender_name_ = None
+              
+        self.cursor_.execute("CREATE TABLE IF NOT EXISTS messages (integer PRIMARY KEY, time, dimension, value_name, value, sender_id, message_id, sender_name) ")
+        
+        
+        self.cursor_.execute('''INSERT INTO messages 
+            ( time, dimension, value_name, value, sender_id, message_id, sender_name ) 
+            VALUES (?,?,?,?,?,?,?)''', (message.time_, message.dimension_,
+            message.value_name_, message.value_, message.sender_id_, message.message_id_, 
+            message.sender_name_))
+        
         
         return_value = "ok"
         return return_value

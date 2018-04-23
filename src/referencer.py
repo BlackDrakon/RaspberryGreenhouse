@@ -1,13 +1,16 @@
 import time
 import worker
+import message
 
 class Referencer(worker.Worker):
     
-    state_ = 0
-    time_points_ = [[6, 1],[22, 0]]
-    out_queues_ = []
-    
-    
+    def __init__(self):
+        super().__init__()
+        self.state_ = 0
+        self.time_points_ = [[6, 1],[22, 0]]
+        self.out_queues_ = []
+        
+        self.time_period_ = 1
     
     def Job(self):
         
@@ -22,8 +25,14 @@ class Referencer(worker.Worker):
                 break
             previus_time_point = time_point
         
+        out_msg = message.Message(value)
+        out_msg.sender_name_ = self.name_
+        
+        #print('referencer send msg', out_msg.message_id_)
+        #print('number of out queues is ', self.out_queues_)
+        
         for out_queue in self.out_queues_:
-            out_queue.put(value) 
+            #print('number of messages inside queue befor writing ',out_queue.qsize()) 
+            out_queue.put(out_msg)
             
-    
-    
+        

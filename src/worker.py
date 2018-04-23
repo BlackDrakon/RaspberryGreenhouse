@@ -1,16 +1,18 @@
+import uuid
 import time
 
 class Worker():
     
-    time_period_ = 1 #time for worker in sec
-    id_ = None
-    name_ = None
+    def __init__(self, id_in = None):
+        if id_in == None:
+            id_in = uuid.uuid4()
+        
+        self.id_ = id_in
+        self.time_period_ = 10 #time for worker in sec
+        self.name_ = None
     
     def Job(self):
         None
-    
-    def __init__(self, id_in = None):
-        self.id_ = id_in
     
     def Worker(self, command_queue):
         while True:

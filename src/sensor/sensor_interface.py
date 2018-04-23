@@ -2,9 +2,7 @@ import message
 import queue
 import worker
 
-
-
-class Sensor(worker.Worker):
+class SensorInterface(worker.Worker):
     
     data_queues_ = []
     sensor_name_ = 'Sensor'

@@ -1,12 +1,14 @@
 import worker
+import message
 
 class RegulatorInterface(worker.Worker):
     
     referencer_ = []
     sensor_ = []
-    
-    time_period_ = 1 #time for worker in sec
     actuators_ = [] #list of all actuators
+    
+    name_ = 'regulator'
+    
     solution_ = None
     
     def Job(self):
@@ -18,7 +20,8 @@ class RegulatorInterface(worker.Worker):
     
     def SendSolution(self):
         if len(self.actuators_):
+            message_out = message.Message(self.solution_)
             for actuator in self.actuators_:
-                actuator.GetData(self.solution_)
+                actuator.put(message_out)
         else:
             print('I am so useless, I do not have actuators!!!')
