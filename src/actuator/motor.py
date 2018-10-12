@@ -1,5 +1,6 @@
 #import wiringpi
 import time
+import RPi.GPIO as GPIO
 from actuator_interface import ActuatorInterface
 
 # GPIO pin 12 = BCM pin 18 = wiringpi pin 1
@@ -17,6 +18,9 @@ def SpeedChange(pwm_value):
     #wiringpi.pwmWrite(MOTOR_PWM_PIN, pwm_value)
 
 class Motor(ActuatorInterface):
+    
+    
+    
     None
 
 # значение должно быть от 0 до 1024
